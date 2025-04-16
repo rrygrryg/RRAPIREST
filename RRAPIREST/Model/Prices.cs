@@ -4,7 +4,6 @@ namespace RRAPIREST.Model
 {
     public class Prices
     {
-        [Key]
         public int ID { get; set; }
         public int unique_id { get; set; }
         public string product_sku { get; set; }

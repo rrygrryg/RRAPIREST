@@ -18,36 +18,50 @@ namespace RRAPIREST.Repo
         {
             string response = string.Empty;
             //
-            DownloadFile("https://rekturacjazadanie.blob.core.windows.net/zadanie/Products.csv", @"C:\Users\louis\Pliki\Products.csv");
+            //DownloadFile("https://rekturacjazadanie.blob.core.windows.net/zadanie/Products.csv", @"C:\Users\louis\Pliki\Products.csv");
             //
-            DownloadFile("https://rekturacjazadanie.blob.core.windows.net/zadanie/Inventory.csv", @"C:\Users\louis\Pliki\Inventory.csv");
+            //DownloadFile("https://rekturacjazadanie.blob.core.windows.net/zadanie/Inventory.csv", @"C:\Users\louis\Pliki\Inventory.csv");
             //
-            DownloadFile("https://rekturacjazadanie.blob.core.windows.net/zadanie/Products.csv", @"C:\Users\louis\Pliki\Prices.csv");
+            //DownloadFile("https://rekturacjazadanie.blob.core.windows.net/zadanie/Products.csv", @"C:\Users\louis\Pliki\Prices.csv");
 
-            if (File.Exists("https://rekturacjazadanie.blob.core.windows.net/zadanie/Products.csv"))
+            if (File.Exists("C:\\Users\\louis\\Pliki\\Products.csv"))
             {
-                foreach (string line in File.ReadAllLines("https://rekturacjazadanie.blob.core.windows.net/zadanie/Products.csv").Where(m => m.Split(',').ElementAt<string>(8).Contains("0") && m.Split(',').ElementAt<string>(9).Contains("24h")))
+                foreach (string line in File.ReadAllLines("C:\\Users\\louis\\Pliki\\Products.csv").Where(m => m.Split("\";\"").ElementAt<string>(8).Contains("0") && m.Split("\";\"").ElementAt<string>(9).Contains("24h")))
                 {
-                    string[] strings = line.Split(",");
-                    string queryins = "INSERT INTO Products(sku,name,ean,producer_name,category,is_wire,shipping,available,is_vendor,default_image) VALUES (@sku,@name,@ean,@producer_name,@category,@is_wire,@shipping,@available,@is_vendor,@default_image)";
+                    string[] strings = line.Split("\";\"");
+                    string queryins = "INSERT INTO dbo.Products (sku,name,ean,producer_name,category,is_wire,shipping,available,is_vendor,default_image) VALUES (@sku,@name,@ean,@producer_name,@category,@is_wire,@shipping,@available,@is_vendor,@default_image)";
+                    
                     var parameters = new DynamicParameters();
-                    parameters.Add("sku", strings[0], DbType.String);
-                    parameters.Add("name", strings[0], DbType.String);
-                    parameters.Add("ean", strings[0], DbType.String);
-                    parameters.Add("producer_name", strings[0], DbType.String);
-                    parameters.Add("category", strings[0], DbType.String);
-                    parameters.Add("is_wire", strings[0], DbType.String);
-                    parameters.Add("shipping", strings[0], DbType.String);
-                    parameters.Add("available", strings[0], DbType.String);
-                    parameters.Add("is_vendor", strings[0], DbType.String);
-                    parameters.Add("default_image", strings[0], DbType.String);
+                    parameters.Add("sku", strings[1].Replace("\"",""), DbType.String);
+                    parameters.Add("name", strings[2], DbType.String);
+                    parameters.Add("ean", strings[4], DbType.String);
+                    parameters.Add("producer_name", strings[6], DbType.String);
+                    parameters.Add("category", strings[7], DbType.String);
+                    parameters.Add("is_wire", strings[8], DbType.String);
+                    parameters.Add("shipping", strings[9], DbType.String);
+                    parameters.Add("available", strings[11], DbType.String);
+                    parameters.Add("is_vendor", strings[16], DbType.String);
+                    parameters.Add("default_image", strings[18], DbType.String);
+                    /*
+                    Products produkt = new Products();
+                    produkt.sku = strings[1].Replace("\"", "");
+                    produkt.name = strings[2];
+                    produkt.ean = strings[4];
+                    produkt.producer_name = strings[6];
+                    produkt.category = strings[7];
+                    produkt.is_wire = strings[8];
+                    produkt.shipping = strings[9];
+                    produkt.available = strings[11];
+                    produkt.is_vendor = strings[16];
+                    produkt.default_image = strings[18];
+                    */
                     using (var connecting = this.context.CreateConnection())
                     {
                         await connecting.ExecuteAsync(queryins, parameters);
                     }
                 }
             }
-            if (File.Exists("https://rekturacjazadanie.blob.core.windows.net/zadanie/Inventory.csv"))
+            if (File.Exists("C:\\Users\\louis\\Pliki\\Inventory.csv"))
             {
                 string query = "SELECT SKU FROM products";
                 using (var connection = context.CreateConnection())
@@ -55,21 +69,18 @@ namespace RRAPIREST.Repo
                     var productslist = await connection.QueryAsync<Products>(query);
                     foreach (var product in productslist)
                     {
-                        foreach (string line in File.ReadAllLines("https://rekturacjazadanie.blob.core.windows.net/zadanie/Inventory.csv").Where(m => m.Split(',').ElementAt<string>(8).Contains(product.sku)))
+                        foreach (string line in File.ReadAllLines("C:\\Users\\louis\\Pliki\\Inventory.csv").Where(m => m.Split(',').ElementAt<string>(8).Contains(product.sku)))
                         {
                             string[] strings = line.Split(",");
                             string queryins = "INSERT INTO Inventory(product_id,sku,unit,qty,manufacturer,shipping,shipping_cost) VALUES (@product_id,@sku,unit,@qty,@manufacturer,@shipping,@shipping_cost)";
                             var parameters = new DynamicParameters();
+                            parameters.Add("product_id", strings[0], DbType.String);
                             parameters.Add("sku", strings[0], DbType.String);
-                            parameters.Add("name", strings[0], DbType.String);
-                            parameters.Add("ean", strings[0], DbType.String);
-                            parameters.Add("producer_name", strings[0], DbType.String);
-                            parameters.Add("category", strings[0], DbType.String);
-                            parameters.Add("is_wire", strings[0], DbType.String);
+                            parameters.Add("unit", strings[0], DbType.String);
+                            parameters.Add("qty", strings[0], DbType.VarNumeric);
+                            parameters.Add("manufacturer", strings[0], DbType.String);
                             parameters.Add("shipping", strings[0], DbType.String);
-                            parameters.Add("available", strings[0], DbType.String);
-                            parameters.Add("is_vendor", strings[0], DbType.String);
-                            parameters.Add("default_image", strings[0], DbType.String);
+                            parameters.Add("shipping_cost", strings[0], DbType.VarNumeric);
                             using (var connecting = this.context.CreateConnection())
                             {
                                 await connecting.ExecuteAsync(queryins, parameters);
@@ -79,7 +90,7 @@ namespace RRAPIREST.Repo
                 }
 
             }
-            if (File.Exists("https://rekturacjazadanie.blob.core.windows.net/zadanie/Prices.csv"))
+            if (File.Exists("C:\\Users\\louis\\Pliki\\Prices.csv"))
             {
                 string query = "SELECT SKU FROM products";
                 using (var connection = context.CreateConnection())
@@ -87,21 +98,18 @@ namespace RRAPIREST.Repo
                     var productslist = await connection.QueryAsync<Products>(query);
                     foreach(var product in productslist)
                     {
-                        foreach (string line in File.ReadAllLines("https://rekturacjazadanie.blob.core.windows.net/zadanie/Prices.csv").Where(m => m.Split(',').ElementAt<string>(8).Contains(product.sku)))
+                        foreach (string line in File.ReadAllLines("C:\\Users\\louis\\Pliki\\Prices.csv").Where(m => m.Split(',').ElementAt<string>(8).Contains(product.sku)))
                         {
                             string[] strings = line.Split(",");
-                            string queryins = "INSERT INTO Products(sku,name,ean,producer_name,category,is_wire,shipping,available,is_vendor,default_image) VALUES (@sku,@name,@ean,@producer_name,@category,@is_wire,@shipping,@available,@is_vendor,@default_image)";
+                            string queryins = "INSERT INTO Prices(unique_id,product_sku,nett_prod_price,nett_prod_price_disc,VAT,nett_price_logi) VALUES (@unique_id,@product_sku,@nett_prod_price,@nett_prod_price_disc,@VAT,@nett_price_logi)";
                             var parameters = new DynamicParameters();
-                            parameters.Add("sku", strings[0], DbType.String);
-                            parameters.Add("name", strings[0], DbType.String);
-                            parameters.Add("ean", strings[0], DbType.String);
-                            parameters.Add("producer_name", strings[0], DbType.String);
-                            parameters.Add("category", strings[0], DbType.String);
-                            parameters.Add("is_wire", strings[0], DbType.String);
-                            parameters.Add("shipping", strings[0], DbType.String);
-                            parameters.Add("available", strings[0], DbType.String);
-                            parameters.Add("is_vendor", strings[0], DbType.String);
-                            parameters.Add("default_image", strings[0], DbType.String);
+                            parameters.Add("unique_id", strings[0], DbType.String);
+                            parameters.Add("product_sku", strings[0], DbType.String);
+                            parameters.Add("nett_prod_price", strings[0], DbType.VarNumeric);
+                            parameters.Add("nett_prod_price_disc", strings[0], DbType.VarNumeric);
+                            parameters.Add("VAT", strings[0], DbType.String);
+                            parameters.Add("nett_price_logi", strings[0], DbType.VarNumeric);
+
                             using (var connecting = this.context.CreateConnection())
                             {
                                 await connecting.ExecuteAsync(queryins, parameters);

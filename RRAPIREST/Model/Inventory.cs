@@ -4,7 +4,6 @@ namespace RRAPIREST.Model
 {
     public class Inventory
     {
-        [Key]
         public int product_id {  get; set; }
         public string sku {  get; set; }
         public string unit { get; set; }
