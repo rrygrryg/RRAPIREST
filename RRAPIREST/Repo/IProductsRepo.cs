@@ -4,7 +4,7 @@ namespace RRAPIREST.Repo
 {
     public interface IProductsRepo
     {
-        Task<Products> getBySKU(string selectedSKU);
+        Task<DataProduct> GetBySKU(string selectedSKU);
 
         Task<string> CreateDatabase(string databaseName);
 

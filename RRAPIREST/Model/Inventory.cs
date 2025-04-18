@@ -4,7 +4,8 @@ namespace RRAPIREST.Model
 {
     public class Inventory
     {
-        public int product_id {  get; set; }
+        public int ID { get; set; }
+        public string product_id {  get; set; }
         public string sku {  get; set; }
         public string unit { get; set; }
         public decimal qty { get; set; }

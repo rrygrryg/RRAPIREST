@@ -26,17 +26,17 @@ namespace RRAPIREST.Controllers
             }
             else
             {
-                return BadRequest(_result);
+                return BadRequest("Not created");
             }
         }
 
         [HttpGet("GetBySKU/{sku}")]
         public async Task<IActionResult> GetBySKU(string sku)
         {
-            var _listproduct = await this.productsRepo.getBySKU(sku);
-            if (_listproduct != null)
+            var product = await this.productsRepo.GetBySKU(sku);
+            if (product != null)
             {
-                return Ok(_listproduct);
+                return Ok(product);
             }
             else
             {
