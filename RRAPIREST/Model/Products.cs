@@ -6,7 +6,6 @@ namespace RRAPIREST.Model
     {
         public int ID { get; set; }
         public string sku { get; set; }
-
         public string prod_id { get; set; } 
         public string name { get; set; }
         public string ean { get; set; }
